@@ -1,13 +1,28 @@
 import Icon from './Icon'
 
 const VARIANTS = {
-  primary: { background: 'var(--green)', color: '#fff' },
-  danger: { background: 'var(--red)', color: '#fff' },
-  amber: { background: 'var(--amber)', color: '#fff' },
+  primary: {
+    background: 'linear-gradient(135deg, #FFC56B 0%, #F0A93D 100%)',
+    color: '#2A1A05',
+    border: '1px solid rgba(255,255,255,0.4)',
+    boxShadow: '0 8px 24px -6px rgba(240,169,61,0.5), inset 0 1px 0 rgba(255,255,255,0.5)',
+  },
+  danger: {
+    background: 'linear-gradient(135deg, #FF8C7E 0%, #FF6B5B 100%)',
+    color: '#3A0F08',
+    border: '1px solid rgba(255,255,255,0.3)',
+    boxShadow: '0 8px 24px -6px rgba(255,107,91,0.45), inset 0 1px 0 rgba(255,255,255,0.4)',
+  },
+  amber: {
+    background: 'linear-gradient(135deg, #FFC56B 0%, #F0A93D 100%)',
+    color: '#2A1A05',
+    border: '1px solid rgba(255,255,255,0.4)',
+    boxShadow: '0 8px 24px -6px rgba(240,169,61,0.5), inset 0 1px 0 rgba(255,255,255,0.5)',
+  },
   ghost: {
-    background: 'var(--bg-page)',
-    color: 'var(--text-primary)',
-    border: '1px solid var(--border-strong)',
+    background: 'var(--glass-fill-soft)',
+    color: 'var(--text-hi)',
+    border: '1px solid var(--glass-border)',
   },
 }
 
@@ -20,19 +35,19 @@ export default function Button({
   style = {},
 }) {
   const base = {
-    border: 'none',
     borderRadius: 'var(--radius-md)',
-    padding: '11px 16px',
+    padding: '12px 16px',
     fontSize: 14,
-    fontWeight: 500,
+    fontWeight: 600,
+    fontFamily: 'var(--font-display)',
     cursor: disabled ? 'not-allowed' : 'pointer',
     width: '100%',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
     gap: 6,
-    transition: 'opacity .15s',
-    opacity: disabled ? 0.5 : 1,
+    transition: 'opacity .15s, transform .1s',
+    opacity: disabled ? 0.45 : 1,
   }
   return (
     <button
