@@ -19,12 +19,19 @@ export default function BottomNav() {
     <div
       style={{
         display: 'flex',
-        borderTop: '1px solid var(--border)',
-        background: 'var(--bg-card)',
-        padding: '8px 0 10px',
-        position: 'sticky',
-        bottom: 0,
+        justifyContent: 'space-around',
+        alignItems: 'center',
+        margin: '0 12px 12px',
+        padding: '10px 6px',
+        background: 'rgba(255,255,255,0.07)',
+        backdropFilter: 'blur(22px) saturate(180%)',
+        WebkitBackdropFilter: 'blur(22px) saturate(180%)',
+        border: '1px solid rgba(255,255,255,0.14)',
+        borderRadius: 18,
+        boxShadow: '0 10px 30px -10px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.18)',
+        position: 'relative',
         zIndex: 10,
+        flexShrink: 0,
       }}
     >
       {TABS.map((tab) => {
@@ -34,20 +41,22 @@ export default function BottomNav() {
             key={tab.id}
             onClick={() => navigate(tab.path)}
             style={{
-              flex: 1,
               display: 'flex',
               flexDirection: 'column',
               alignItems: 'center',
               gap: 2,
               cursor: 'pointer',
-              padding: '2px 0',
+              padding: active ? '5px 12px' : '5px 10px',
+              background: active ? 'rgba(240,169,61,0.22)' : 'transparent',
+              borderRadius: 10,
+              transition: 'background .15s',
             }}
           >
             <div style={{ position: 'relative', display: 'inline-flex' }}>
               <Icon
                 name={tab.icon}
-                size={21}
-                color={active ? 'var(--blue)' : 'var(--text-secondary)'}
+                size={18}
+                color={active ? '#F0A93D' : 'var(--text-low)'}
               />
               {tab.id === 'inbox' && unclassifiedCount > 0 && (
                 <span
@@ -57,17 +66,19 @@ export default function BottomNav() {
                     right: -5,
                     width: 7,
                     height: 7,
-                    background: 'var(--red)',
+                    background: '#FF6B5B',
                     borderRadius: '50%',
+                    boxShadow: '0 0 6px rgba(255,107,91,0.7)',
                   }}
                 />
               )}
             </div>
             <span
               style={{
-                fontSize: 9,
-                color: active ? 'var(--blue)' : 'var(--text-secondary)',
-                fontWeight: active ? 500 : 400,
+                fontFamily: 'var(--font-display)',
+                fontSize: 8,
+                color: active ? '#F0A93D' : 'var(--text-low)',
+                fontWeight: 600,
               }}
             >
               {tab.label}
