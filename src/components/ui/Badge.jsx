@@ -1,9 +1,9 @@
 const VARIANTS = {
-  warn: { background: '#fef3dc', color: '#8a5500' },
-  ok: { background: '#e6f7f0', color: '#0d6b47' },
-  info: { background: '#eff6ff', color: '#1e40af' },
-  red: { background: '#fdeaea', color: '#9b2c2c' },
-  gray: { background: '#f1f0ee', color: '#5f5e5a' },
+  warn: { background: 'rgba(240,169,61,0.18)', color: '#FFD98A' },
+  ok: { background: 'rgba(95,217,122,0.16)', color: '#5FD97A' },
+  info: { background: 'rgba(91,159,240,0.16)', color: '#5B9FF0' },
+  red: { background: 'rgba(255,107,91,0.16)', color: '#FF6B5B' },
+  gray: { background: 'rgba(255,255,255,0.08)', color: 'var(--text-mid)' },
 }
 
 export default function Badge({ children, variant = 'gray' }) {
@@ -12,10 +12,11 @@ export default function Badge({ children, variant = 'gray' }) {
     <span
       style={{
         fontSize: 10,
-        padding: '2px 7px',
-        borderRadius: 10,
+        padding: '2px 8px',
+        borderRadius: 8,
         display: 'inline-block',
-        fontWeight: 500,
+        fontWeight: 600,
+        fontFamily: 'var(--font-display)',
         ...style,
       }}
     >
