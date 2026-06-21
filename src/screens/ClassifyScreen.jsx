@@ -2,7 +2,6 @@ import { useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import useAppStore from '../store/useAppStore'
 import BackButton from '../components/ui/BackButton'
-import Card from '../components/ui/Card'
 import Button from '../components/ui/Button'
 import Icon from '../components/ui/Icon'
 import Avatar from '../components/ui/Avatar'
@@ -10,9 +9,9 @@ import { fmtKES, fmtTime, newId } from '../utils/formatters'
 import { EXPENSE_CATEGORIES } from '../data/mockData'
 
 const TYPE_OPTS = [
-  { id: 'sale', icon: 'bag', label: 'Sale', color: 'var(--green)', bg: 'var(--green-bg)' },
-  { id: 'debt', icon: 'userDollar', label: 'Debt', color: 'var(--amber)', bg: 'var(--amber-bg)' },
-  { id: 'expense', icon: 'receiptOff', label: 'Expense', color: 'var(--red)', bg: 'var(--red-bg)' },
+  { id: 'sale', icon: 'bottle', label: 'Sale', color: '#F0A93D' },
+  { id: 'debt', icon: 'userDollar', label: 'Debt', color: '#5B9FF0' },
+  { id: 'expense', icon: 'receiptOff', label: 'Expense', color: '#FF6B5B' },
 ]
 
 export default function ClassifyScreen() {
@@ -41,7 +40,7 @@ export default function ClassifyScreen() {
     return (
       <div style={{ flex: 1, padding: 24 }}>
         <BackButton to="/inbox" />
-        <p>Transaction not found.</p>
+        <p style={{ color: 'var(--text-hi)' }}>Transaction not found.</p>
       </div>
     )
   }
@@ -73,10 +72,8 @@ export default function ClassifyScreen() {
       cls.customerId = newCust.id
     } else if (type === 'debt' && customerId) {
       if (txn.direction === 'in') {
-        // incoming cash = customer repaying their debt
         addDebtPayment(customerId, txn.amount, txn.id)
       } else {
-        // outgoing = shop extends new credit to customer
         increaseDebt(customerId, txn.amount)
       }
     }
@@ -103,17 +100,21 @@ export default function ClassifyScreen() {
             width: 64,
             height: 64,
             borderRadius: '50%',
-            background: 'var(--green-bg)',
+            background: 'rgba(95,217,122,0.18)',
+            border: '1px solid rgba(95,217,122,0.4)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             marginBottom: 14,
+            animation: 'popIn 0.4s ease-out',
           }}
         >
-          <Icon name="check" size={32} color="var(--green)" />
+          <Icon name="check" size={32} color="#5FD97A" />
         </div>
-        <p style={{ fontSize: 16, fontWeight: 500 }}>Classified!</p>
-        <p style={{ fontSize: 13, color: 'var(--text-secondary)', marginTop: 4 }}>
+        <p style={{ fontFamily: 'var(--font-display)', fontSize: 16, fontWeight: 700, color: 'var(--text-hi)' }}>
+          Classified!
+        </p>
+        <p style={{ fontSize: 13, color: 'var(--text-low)', marginTop: 4 }}>
           Transaction saved
         </p>
       </div>
@@ -121,246 +122,282 @@ export default function ClassifyScreen() {
   }
 
   return (
-    <div style={{ flex: 1, overflowY: 'auto', padding: '14px 14px 8px' }}>
-      <BackButton to="/inbox" />
-      <h1 style={{ fontSize: 18, fontWeight: 500, marginBottom: 14 }}>Classify</h1>
+    <div style={{ flex: 1, overflowY: 'auto', padding: '14px 14px 8px', position: 'relative' }}>
+      <div
+        className="bg-blob"
+        style={{ width: 130, height: 130, top: 40, right: -40, background: 'rgba(240,169,61,0.2)' }}
+      />
 
-      <Card
-        style={{
-          textAlign: 'center',
-          marginBottom: 16,
-          background: txn.direction === 'in' ? 'var(--green-bg)' : 'var(--red-bg)',
-          border: `1px solid ${txn.direction === 'in' ? 'var(--green-border)' : 'var(--red-border)'}`,
-        }}
-      >
-        <p style={{ fontSize: 10, color: 'var(--text-secondary)', marginBottom: 4 }}>
-          {(txn.source === 'mpesa' ? 'M-Pesa' : 'Cash') + ' · ' + fmtTime(txn.ts)}
-        </p>
-        <p
+      <div style={{ position: 'relative', zIndex: 1 }}>
+        <BackButton to="/inbox" />
+        <h1
           style={{
-            fontSize: 28,
-            fontWeight: 500,
-            color: txn.direction === 'in' ? 'var(--green)' : 'var(--red)',
-            margin: '2px 0',
+            fontFamily: 'var(--font-display)',
+            fontSize: 19,
+            fontWeight: 700,
+            color: 'var(--text-hi)',
+            letterSpacing: '-0.02em',
+            marginBottom: 14,
           }}
         >
-          {(txn.direction === 'in' ? '+' : '-') + fmtKES(txn.amount)}
-        </p>
-      </Card>
+          Classify
+        </h1>
 
-      <p
-        style={{
-          fontSize: 11,
-          color: 'var(--text-secondary)',
-          marginBottom: 8,
-          textTransform: 'uppercase',
-          letterSpacing: '.05em',
-          fontWeight: 500,
-        }}
-      >
-        What is this?
-      </p>
-      <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: '1fr 1fr 1fr',
-          gap: 8,
-          marginBottom: 16,
-        }}
-      >
-        {TYPE_OPTS.map((o) => (
-          <div
-            key={o.id}
-            onClick={() => {
-              setType(o.id)
-              setCategory(null)
-              setCustomerId(null)
-              setAddingNew(false)
-            }}
+        <div
+          className="glass-card"
+          style={{ textAlign: 'center', padding: 16, marginBottom: 16, position: 'relative', overflow: 'hidden' }}
+        >
+          <p
             style={{
-              background: type === o.id ? o.bg : 'var(--bg-card)',
-              border:
-                type === o.id ? `2px solid ${o.color}` : '1px solid var(--border)',
-              borderRadius: 10,
-              padding: '12px 6px',
-              textAlign: 'center',
-              cursor: 'pointer',
+              fontFamily: 'var(--font-display)',
+              fontSize: 10,
+              color: '#FFD98A',
+              textTransform: 'uppercase',
+              letterSpacing: '0.1em',
+              fontWeight: 600,
             }}
           >
-            <Icon
-              name={o.icon}
-              size={22}
-              color={type === o.id ? o.color : 'var(--text-secondary)'}
-              style={{ display: 'block', margin: '0 auto 5px' }}
-            />
-            <span
-              style={{
-                fontSize: 11,
-                fontWeight: 500,
-                color: type === o.id ? o.color : 'var(--text-primary)',
-              }}
-            >
-              {o.label}
-            </span>
-          </div>
-        ))}
-      </div>
-
-      {type === 'sale' && (
-        <div>
-          <p style={{ fontSize: 11, color: 'var(--text-secondary)', marginBottom: 6 }}>
-            Product name
+            {(txn.source === 'mpesa' ? 'M-Pesa' : 'Cash') + ' · ' + fmtTime(txn.ts)}
           </p>
-          <input
-            value={product}
-            onChange={(e) => setProduct(e.target.value)}
-            placeholder="e.g. Johnnie Walker Black"
-            style={inputStyle}
-          />
-          <p style={{ fontSize: 11, color: 'var(--text-secondary)', margin: '10px 0 6px' }}>
-            Quantity (optional)
+          <p
+            className="shimmer-text"
+            style={{
+              fontFamily: 'var(--font-display)',
+              fontSize: 30,
+              fontWeight: 700,
+              letterSpacing: '-0.03em',
+              margin: '5px 0',
+            }}
+          >
+            {(txn.direction === 'in' ? '+' : '-') + fmtKES(txn.amount)}
           </p>
-          <input
-            value={qty}
-            onChange={(e) => setQty(e.target.value)}
-            placeholder="e.g. 2 bottles"
-            style={inputStyle}
-          />
+          <p style={{ fontSize: 9, color: 'var(--text-low)' }}>KES</p>
         </div>
-      )}
 
-      {type === 'expense' && (
-        <div>
-          <p style={{ fontSize: 11, color: 'var(--text-secondary)', marginBottom: 8 }}>
-            Category
-          </p>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
-            {EXPENSE_CATEGORIES.map((c) => (
+        <p
+          style={{
+            fontFamily: 'var(--font-display)',
+            fontSize: 10,
+            color: 'var(--text-low)',
+            marginBottom: 8,
+            textTransform: 'uppercase',
+            letterSpacing: '0.08em',
+            fontWeight: 600,
+          }}
+        >
+          What is this?
+        </p>
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: '1fr 1fr 1fr',
+            gap: 8,
+            marginBottom: 16,
+          }}
+        >
+          {TYPE_OPTS.map((o) => {
+            const selected = type === o.id
+            return (
               <div
-                key={c.id}
-                onClick={() => setCategory(c.id)}
+                key={o.id}
+                onClick={() => {
+                  setType(o.id)
+                  setCategory(null)
+                  setCustomerId(null)
+                  setAddingNew(false)
+                }}
                 style={{
-                  background: category === c.id ? 'var(--blue-bg)' : 'var(--bg-card)',
-                  border:
-                    category === c.id
-                      ? '2px solid var(--blue)'
-                      : '1px solid var(--border)',
-                  borderRadius: 10,
-                  padding: 10,
+                  background: selected ? `${o.color}26` : 'var(--glass-fill-soft)',
+                  backdropFilter: 'blur(10px)',
+                  WebkitBackdropFilter: 'blur(10px)',
+                  border: selected ? `1.5px solid ${o.color}99` : '1px solid var(--glass-border)',
+                  boxShadow: selected ? `0 4px 16px -4px ${o.color}55` : 'none',
+                  borderRadius: 12,
+                  padding: '12px 6px',
                   textAlign: 'center',
                   cursor: 'pointer',
-                  gridColumn: c.id === 'other' ? '1 / -1' : 'auto',
                 }}
               >
                 <Icon
-                  name={c.icon}
-                  size={18}
-                  color={category === c.id ? 'var(--blue)' : 'var(--text-secondary)'}
-                  style={{ display: 'block', margin: '0 auto 3px' }}
+                  name={o.icon}
+                  size={20}
+                  color={selected ? o.color : 'var(--text-mid)'}
+                  style={{ display: 'block', margin: '0 auto 5px' }}
                 />
                 <span
                   style={{
-                    fontSize: 11,
-                    color: category === c.id ? 'var(--blue-text)' : 'var(--text-primary)',
+                    fontFamily: 'var(--font-display)',
+                    fontSize: 10,
+                    fontWeight: 600,
+                    color: selected ? o.color : 'var(--text-mid)',
                   }}
                 >
-                  {c.label}
+                  {o.label}
                 </span>
               </div>
-            ))}
-          </div>
+            )
+          })}
         </div>
-      )}
 
-      {type === 'debt' && (
-        <div>
-          <p style={{ fontSize: 11, color: 'var(--text-secondary)', marginBottom: 8 }}>
-            {txn.direction === 'in' ? 'Customer repaying debt' : 'Assign debt to customer'}
-          </p>
-          {customers.map((c) => (
+        {type === 'sale' && (
+          <div>
+            <p style={{ fontSize: 11, color: 'var(--text-low)', marginBottom: 6 }}>
+              Product name
+            </p>
+            <input
+              value={product}
+              onChange={(e) => setProduct(e.target.value)}
+              placeholder="e.g. Johnnie Walker Black"
+              style={inputStyle}
+            />
+            <p style={{ fontSize: 11, color: 'var(--text-low)', margin: '10px 0 6px' }}>
+              Quantity (optional)
+            </p>
+            <input
+              value={qty}
+              onChange={(e) => setQty(e.target.value)}
+              placeholder="e.g. 2 bottles"
+              style={inputStyle}
+            />
+          </div>
+        )}
+
+        {type === 'expense' && (
+          <div>
+            <p style={{ fontSize: 11, color: 'var(--text-low)', marginBottom: 8 }}>
+              Category
+            </p>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+              {EXPENSE_CATEGORIES.map((c) => {
+                const selected = category === c.id
+                return (
+                  <div
+                    key={c.id}
+                    onClick={() => setCategory(c.id)}
+                    style={{
+                      background: selected ? 'rgba(91,159,240,0.18)' : 'var(--glass-fill-soft)',
+                      backdropFilter: 'blur(10px)',
+                      WebkitBackdropFilter: 'blur(10px)',
+                      border: selected ? '1.5px solid rgba(91,159,240,0.7)' : '1px solid var(--glass-border)',
+                      borderRadius: 11,
+                      padding: 10,
+                      textAlign: 'center',
+                      cursor: 'pointer',
+                      gridColumn: c.id === 'other' ? '1 / -1' : 'auto',
+                    }}
+                  >
+                    <Icon
+                      name={c.icon}
+                      size={18}
+                      color={selected ? '#5B9FF0' : 'var(--text-mid)'}
+                      style={{ display: 'block', margin: '0 auto 3px' }}
+                    />
+                    <span
+                      style={{
+                        fontSize: 11,
+                        color: selected ? '#5B9FF0' : 'var(--text-hi)',
+                        fontWeight: selected ? 600 : 400,
+                      }}
+                    >
+                      {c.label}
+                    </span>
+                  </div>
+                )
+              })}
+            </div>
+          </div>
+        )}
+
+        {type === 'debt' && (
+          <div>
+            <p style={{ fontSize: 11, color: 'var(--text-low)', marginBottom: 8 }}>
+              {txn.direction === 'in' ? 'Customer repaying debt' : 'Assign debt to customer'}
+            </p>
+            {customers.map((c) => {
+              const selected = customerId === c.id
+              return (
+                <div
+                  key={c.id}
+                  onClick={() => {
+                    setCustomerId(c.id)
+                    setAddingNew(false)
+                  }}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 10,
+                    padding: '9px 12px',
+                    background: selected ? 'rgba(91,159,240,0.16)' : 'var(--glass-fill-soft)',
+                    backdropFilter: 'blur(10px)',
+                    WebkitBackdropFilter: 'blur(10px)',
+                    border: selected ? '1.5px solid rgba(91,159,240,0.7)' : '1px solid var(--glass-border)',
+                    borderRadius: 11,
+                    marginBottom: 8,
+                    cursor: 'pointer',
+                  }}
+                >
+                  <Avatar name={c.name} color="blue" size={32} />
+                  <div style={{ flex: 1 }}>
+                    <p style={{ fontSize: 12, fontWeight: 500, color: 'var(--text-hi)' }}>{c.name}</p>
+                    <p style={{ fontSize: 10, color: '#FFD98A' }}>
+                      {fmtKES(c.totalOwed)} KES owed
+                    </p>
+                  </div>
+                  {selected && <Icon name="circleCheck" size={18} color="#5B9FF0" />}
+                </div>
+              )
+            })}
             <div
-              key={c.id}
               onClick={() => {
-                setCustomerId(c.id)
-                setAddingNew(false)
+                setAddingNew(!addingNew)
+                setCustomerId(null)
               }}
               style={{
+                border: '1px dashed var(--text-low)',
+                borderRadius: 11,
+                padding: 10,
+                textAlign: 'center',
+                fontSize: 12,
+                color: 'var(--text-low)',
+                cursor: 'pointer',
+                marginBottom: 8,
                 display: 'flex',
                 alignItems: 'center',
-                gap: 10,
-                padding: '9px 12px',
-                background: customerId === c.id ? 'var(--blue-bg)' : 'var(--bg-card)',
-                border:
-                  customerId === c.id
-                    ? '2px solid var(--blue)'
-                    : '1px solid var(--border)',
-                borderRadius: 10,
-                marginBottom: 8,
-                cursor: 'pointer',
+                justifyContent: 'center',
+                gap: 4,
               }}
             >
-              <Avatar name={c.name} color="blue" size={32} />
-              <div style={{ flex: 1 }}>
-                <p style={{ fontSize: 12, fontWeight: 500 }}>{c.name}</p>
-                <p style={{ fontSize: 10, color: 'var(--amber)' }}>
-                  {fmtKES(c.totalOwed)} owed
-                </p>
+              <Icon name="plus" size={14} /> New customer
+            </div>
+            {addingNew && (
+              <div>
+                <input
+                  value={newName}
+                  onChange={(e) => setNewName(e.target.value)}
+                  placeholder="Customer name"
+                  style={{ ...inputStyle, marginBottom: 8 }}
+                />
+                <input
+                  value={newPhone}
+                  onChange={(e) => setNewPhone(e.target.value)}
+                  placeholder="Phone (optional)"
+                  style={inputStyle}
+                />
               </div>
-              {customerId === c.id && (
-                <Icon name="circleCheck" size={18} color="var(--blue)" />
-              )}
-            </div>
-          ))}
-          <div
-            onClick={() => {
-              setAddingNew(!addingNew)
-              setCustomerId(null)
-            }}
-            style={{
-              border: '1px dashed var(--border-strong)',
-              borderRadius: 10,
-              padding: 10,
-              textAlign: 'center',
-              fontSize: 12,
-              color: 'var(--text-secondary)',
-              cursor: 'pointer',
-              marginBottom: 8,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: 4,
-            }}
-          >
-            <Icon name="plus" size={14} /> New customer
+            )}
           </div>
-          {addingNew && (
-            <div>
-              <input
-                value={newName}
-                onChange={(e) => setNewName(e.target.value)}
-                placeholder="Customer name"
-                style={{ ...inputStyle, marginBottom: 8 }}
-              />
-              <input
-                value={newPhone}
-                onChange={(e) => setNewPhone(e.target.value)}
-                placeholder="Phone (optional)"
-                style={inputStyle}
-              />
-            </div>
-          )}
-        </div>
-      )}
+        )}
 
-      <div style={{ marginTop: 16 }}>
-        <Button
-          variant={type === 'sale' ? 'primary' : type === 'expense' ? 'danger' : 'amber'}
-          onClick={confirm}
-          disabled={!canConfirm}
-          icon="check"
-        >
-          {type ? `Confirm ${type}` : 'Select a type'}
-        </Button>
+        <div style={{ marginTop: 16 }}>
+          <Button
+            variant={type === 'sale' ? 'primary' : type === 'expense' ? 'danger' : 'amber'}
+            onClick={confirm}
+            disabled={!canConfirm}
+            icon="check"
+          >
+            {type ? `Confirm ${type}` : 'Select a type'}
+          </Button>
+        </div>
       </div>
     </div>
   )
@@ -368,10 +405,12 @@ export default function ClassifyScreen() {
 
 const inputStyle = {
   width: '100%',
-  border: '1px solid var(--border-strong)',
-  borderRadius: 8,
-  padding: '9px 11px',
+  border: '1px solid var(--glass-border)',
+  borderRadius: 10,
+  padding: '10px 12px',
   fontSize: 13,
-  background: 'var(--bg-card)',
-  color: 'var(--text-primary)',
+  background: 'var(--glass-fill-soft)',
+  color: 'var(--text-hi)',
+  backdropFilter: 'blur(10px)',
+  WebkitBackdropFilter: 'blur(10px)',
 }
