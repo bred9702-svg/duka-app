@@ -14,27 +14,27 @@ export default function TransactionsScreen() {
   const unclassified = transactions.filter((t) => !t.classified)
   const classified = transactions.filter((t) => t.classified)
 
-  function addCash(direction) {
-    const raw = window.prompt(
-      (direction === 'in' ? 'Cash received' : 'Cash paid out') +
-        ' — enter amount in KES:'
-    )
-    if (!raw) return
-    const amount = parseInt(raw.replace(/[^0-9]/g, ''), 10)
-    if (!amount || amount <= 0) {
-      window.alert('Invalid amount')
-      return
-    }
-    addTransaction({
-      id: newId('t'),
-      amount,
-      source: 'cash',
-      direction,
-      ts: Date.now(),
-      classified: false,
-      classification: null,
-    })
+ function addCash(direction) {
+  const raw = window.prompt(
+    (direction === 'in' ? 'Cash received' : 'Cash paid out') +
+      ' — enter amount in KES:'
+  )
+  if (!raw) return
+  const amount = parseInt(raw.replace(/[^0-9]/g, ''), 10)
+  if (!amount || amount <= 0) {
+    window.alert('Invalid amount')
+    return
   }
+  addTransaction({
+    amount,
+    source: 'cash',
+    direction,
+    classified: false,
+    mpesa_sender_name: null,
+    mpesa_sender_phone: null,
+    mpesa_reference: null,
+  })
+}
 
   return (
     <div style={{ flex: 1, overflowY: 'auto', padding: '16px 14px 8px', position: 'relative' }}>
