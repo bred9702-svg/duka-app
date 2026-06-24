@@ -3,14 +3,10 @@ import Badge from '../ui/Badge'
 import { fmtKES, fmtTime } from '../../utils/formatters'
 
 export default function TransactionRow({ txn, customers, onClick, delay = 0 }) {
-  const cls = txn.classification || txn
   const isIn = txn.direction === 'in'
   const isMpesa = txn.source === 'mpesa'
   const isClassified = txn.classified
-
-  // Détermine le type depuis les deux formats possibles
-  // (ancien format local: txn.classification.type, nouveau: txn.operation_type)
-  const opType = txn.operation_type || txn.classification?.type || null
+  const opType = txn.operation_type || null
 
   let iconBg = isIn ? 'rgba(95,217,122,0.18)' : 'rgba(255,107,91,0.18)'
   let iconFg = isIn ? '#5FD97A' : '#FF6B5B'
@@ -19,24 +15,20 @@ export default function TransactionRow({ txn, customers, onClick, delay = 0 }) {
 
   if (isClassified && opType) {
     if (opType === 'sale') {
-      // Nom du produit depuis le join Supabase ou l'ancien format
-      const productName = txn.product?.name || txn.classification?.productName || 'Product'
+      const productName = txn.product?.name || 'Product'
       title = 'Sale — ' + productName
       iconName = 'bottle'
       iconBg = 'rgba(240,169,61,0.18)'
       iconFg = '#F0A93D'
     } else if (opType === 'expense') {
-      const cat = txn.expense_category || txn.classification?.category || 'Other'
-      title = 'Expense — ' + cat
+      title = 'Expense — ' + (txn.expense_category || 'Other')
       iconName = 'receiptOff'
       iconBg = 'rgba(255,107,91,0.18)'
       iconFg = '#FF6B5B'
     } else if (opType === 'debt') {
-      // Nom du client depuis le join Supabase ou les customers locaux
       const custName =
         txn.customer?.name ||
         customers?.find(c => c.id === txn.customer_id)?.name ||
-        customers?.find(c => c.id === txn.classification?.customerId)?.name ||
         'Customer'
       title = 'Debt — ' + custName
       iconName = 'userDollar'
@@ -44,7 +36,6 @@ export default function TransactionRow({ txn, customers, onClick, delay = 0 }) {
       iconFg = '#5B9FF0'
     }
   } else {
-    // Non classifiée — affiche le bon label selon direction
     if (isMpesa) {
       title = isIn ? 'M-Pesa received' : 'M-Pesa sent'
     } else {
@@ -52,7 +43,6 @@ export default function TransactionRow({ txn, customers, onClick, delay = 0 }) {
     }
   }
 
-  // Timestamp — supporte les deux formats
   const timestamp = txn.created_at || txn.ts
 
   return (
